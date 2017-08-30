@@ -4,16 +4,20 @@ from __future__ import absolute_import
 import octoprint.plugin
 
 class FanSliderPlugin(octoprint.plugin.StartupPlugin,
-                    octoprint.plugin.TemplatePlugin,
-                    octoprint.plugin.SettingsPlugin,
-                    octoprint.plugin.AssetPlugin):
-        
-    def get_assets(self):
-        return dict(
-            js=["js/fanslider.js"]
-        )
-    
-    def get_update_information(self):
+					octoprint.plugin.TemplatePlugin,
+					octoprint.plugin.SettingsPlugin,
+					octoprint.plugin.AssetPlugin):
+
+	def get_settings_defaults(self):
+		return dict(fanSpeed="255")
+
+	def get_assets(self):
+		return dict(
+			js=["js/fanslider.js"],
+			css=["css/style.css"]
+		)
+	
+	def get_update_information(self):
 		return dict(
 			fanspeedslider=dict(
 				displayName="Fan Speed Slider",
