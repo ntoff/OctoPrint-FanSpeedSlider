@@ -9,7 +9,7 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 					octoprint.plugin.AssetPlugin):
 
 	def get_settings_defaults(self):
-		return dict(fanSpeed="255")
+		return dict(fanSpeed=100)
 
 	def get_assets(self):
 		return dict(
@@ -17,6 +17,11 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 			css=["css/style.css"]
 		)
 	
+	def get_template_configs(self):
+		return [
+			dict(type="settings", custom_bindings=False)
+		]	
+
 	def get_update_information(self):
 		return dict(
 			fanspeedslider=dict(

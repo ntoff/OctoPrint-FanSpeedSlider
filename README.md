@@ -1,6 +1,6 @@
-# OctoPrint-FanSpeedSlider
+# Fan Speed Slider Plugin
 
-Adds a slider to control the speed of a parts cooling fan.
+Add a slider to control the speed of a parts cooling fan. The default value of the slider is user configurable, however the value doesn't limit the output of the fan during a print, for that you'll have to use your slicer.
 
 ![](./image/slider.JPG)
 
