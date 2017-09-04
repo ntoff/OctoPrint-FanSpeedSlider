@@ -12,11 +12,13 @@ $(function() {
 		self.control = parameters[2];
 		self.settings = parameters[3];
 
-		//default to 100% fan speed
-		fanSpeed = ko.observable(undefined);		
+		fanSpeed = ko.observable(undefined);
+
 		//convert percentage into PWM
 		fanPWM = ko.pureComputed(function () {
-			return Math.round(fanSpeed() * 255 / 100);
+			self.speed = fanSpeed() * 255 / 100
+			
+			return self.speed;
 		});
 		//send gcode to set fan speed
 		sendFanSpeed = function () {
