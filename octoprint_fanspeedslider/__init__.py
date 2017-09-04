@@ -43,8 +43,9 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 	def rewrite_m106(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
 		if gcode and gcode.startswith('M106'):
 			getcontext().prec = 5 #sets precision for "Decimal" not sure if this'll cause conflicts, ideas?
-			self.minPWM = Decimal( Decimal(self.minSpeed) * Decimal(255) / Decimal(100) )
-			self.maxPWM = Decimal( Decimal(self.maxSpeed) * Decimal(255) / Decimal(100) )
+			self.minPWM = Decimal( Decimal(self.minSpeed) * Decimal(255) / Decimal(100) ) #convoluted mess, could this be reduced to a function
+			self.maxPWM = Decimal( Decimal(self.maxSpeed) * Decimal(255) / Decimal(100) ) #so basically the same thing isn't written twice? 
+			#Also move it out of here so it doesn't get calculated every single time the speed is rewritten
 			fanPwm = re.search("S(\d+.\d+)", cmd)
 			if fanPwm and fanPwm.group(1):
 				fanPwm = fanPwm.group(1)

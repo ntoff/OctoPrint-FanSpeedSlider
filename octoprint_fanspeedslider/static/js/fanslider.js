@@ -16,7 +16,7 @@ $(function() {
 
 		//convert percentage into PWM
 		fanPWM = ko.pureComputed(function () {
-			self.speed = fanSpeed() * 255 / 100
+			self.speed = fanSpeed() * 255 / 100 //don't forget to limit this to 2 decimal places at some point.
 			
 			return self.speed;
 		});
