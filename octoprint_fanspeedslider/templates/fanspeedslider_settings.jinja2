@@ -12,7 +12,7 @@
                 <span class="help-block">{{ _('The default value the slider will be set to when opening OctoPrint\'s UI') }}</span>
             </div>
         </div>
-        <p>{{ _('The settings below can be used to limit the fan\'s output, this is useful if your slicer doesn\'t allow min / max fan speeds.') }}</p>
+        <p>{{ _('The settings below can be used to limit the fan\'s output without having to re-slice and re-upload your gcode.') }}</p>
         <div class="control-group">
             <label class="control-label">{{ _('Minimum Speed') }}</label>
             <div class="controls">
@@ -20,7 +20,7 @@
                     <input type="number" min="0" max="100" class="input-mini" data-bind="value: settings.plugins.fanspeedslider.minSpeed">
                     <span class="add-on">%</span>
                 </div>
-                <span class="help-block">{{ _('Any value set by the slicer which is below this value will be increased to meet this speed.') }}</span>
+                <span class="help-block">{{ _('Any value sent which is below this value will be increased to meet this speed. Useful if your fan doesn\'t work below a certain threshold.') }}</span>
             </div>
         </div>
         <div class="control-group">
@@ -30,9 +30,9 @@
                     <input type="number" min="0" max="100" class="input-mini" data-bind="value: settings.plugins.fanspeedslider.maxSpeed">
                     <span class="add-on">%</span>
                 </div>
-                <span class="help-block">{{ _('Any value set by the slicer which is above this value will be decreased to meet this speed.') }}</span>
+                <span class="help-block">{{ _('Any value sent which is above this value will be decreased to meet this speed. Useful if your fan is too strong on full speed.') }}</span>
             </div>
         </div>
-        <p><i>{{ _('NOTE: The min/max setting has no effect when you are printing from an SD card attached directly to the printer as the gcode does not pass through OctoPrint. In the case of printing from SD, you will be required to use a slicer that allows for seting the min / max speed.') }}</i></p>
+        <p><i>{{ _('NOTE: The min/max setting has no effect when you are printing from an SD card that is attached directly to the printer as the gcode does not pass through OctoPrint.') }}</i></p>
     </form>
 </div>
