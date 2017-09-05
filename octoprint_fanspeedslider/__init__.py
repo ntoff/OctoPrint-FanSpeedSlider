@@ -11,9 +11,7 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 					octoprint.plugin.AssetPlugin):
 
 	def on_after_startup(self):
-		self.fanSpeed = self._settings.get(["fanSpeed"])
-		self.minSpeed = self._settings.get(["minSpeed"])
-		self.maxSpeed = self._settings.get(["maxSpeed"])
+		self.get_settings_updates()
 
 	def get_settings_defaults(self):
 		return dict(
@@ -24,10 +22,7 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 
 	def on_settings_save(self, data):
 		octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
-
-		self.fanSpeed = self._settings.get(["fanSpeed"])
-		self.minSpeed = self._settings.get(["minSpeed"])
-		self.maxSpeed = self._settings.get(["maxSpeed"])
+		self.get_settings_updates()
 
 	def get_assets(self):
 		return dict(
@@ -40,12 +35,17 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 			dict(type="settings", custom_bindings=False)
 		]
 
+	def get_settings_updates(self):
+		self.fanSpeed = self._settings.get(["fanSpeed"])
+		self.minSpeed = self._settings.get(["minSpeed"])
+		self.maxSpeed = self._settings.get(["maxSpeed"])
+		
+		getcontext().prec=5 #sets precision for "Decimal" not sure if this'll cause conflicts, ideas?
+		self.minPWM = Decimal( Decimal(self.minSpeed) * Decimal(2.55) )
+		self.maxPWM = Decimal( Decimal(self.maxSpeed) * Decimal(2.55) )
+
 	def rewrite_m106(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
 		if gcode and gcode.startswith('M106'):
-			getcontext().prec = 5 #sets precision for "Decimal" not sure if this'll cause conflicts, ideas?
-			self.minPWM = Decimal( Decimal(self.minSpeed) * Decimal(255) / Decimal(100) ) #convoluted mess, could this be reduced to a function
-			self.maxPWM = Decimal( Decimal(self.maxSpeed) * Decimal(255) / Decimal(100) ) #so basically the same thing isn't written twice? 
-			#Also move it out of here so it doesn't get calculated every single time the speed is rewritten
 			fanPwm = re.search("S(\d+.\d+)", cmd)
 			if fanPwm and fanPwm.group(1):
 				fanPwm = fanPwm.group(1)
