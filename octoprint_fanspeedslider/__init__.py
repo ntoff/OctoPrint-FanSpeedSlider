@@ -41,8 +41,8 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 		self.maxSpeed = self._settings.get(["maxSpeed"])
 		
 		getcontext().prec=5 #sets precision for "Decimal" not sure if this'll cause conflicts, ideas?
-		self.minPWM = Decimal( Decimal(self.minSpeed) * Decimal(2.55) )
-		self.maxPWM = Decimal( Decimal(self.maxSpeed) * Decimal(2.55) )
+		self.minPWM = round( Decimal(self.minSpeed) * Decimal(2.55), 2 )
+		self.maxPWM = round( Decimal(self.maxSpeed) * Decimal(2.55), 2 )
 
 	def rewrite_m106(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
 		if gcode and gcode.startswith('M106'):
