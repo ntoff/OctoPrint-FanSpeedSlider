@@ -15,7 +15,7 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 
 	def get_settings_defaults(self):
 		return dict(
-			fanSpeed=100,
+			defaultFanSpeed=100,
 			minSpeed=0,
 			maxSpeed=100
 		)
@@ -36,7 +36,7 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 		]
 
 	def get_settings_updates(self):
-		self.fanSpeed = self._settings.get(["fanSpeed"])
+		self.defaultFanSpeed = self._settings.get(["defaultFanSpeed"])
 		self.minSpeed = self._settings.get(["minSpeed"])
 		self.maxSpeed = self._settings.get(["maxSpeed"])
 		

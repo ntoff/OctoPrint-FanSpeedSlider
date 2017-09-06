@@ -54,7 +54,7 @@ $(function() {
 		}
 		//retrieve settings
 		self.onBeforeBinding = function() {
-			fanSpeed(self.settings.settings.plugins.fanspeedslider.fanSpeed());
+			fanSpeed(self.settings.settings.plugins.fanspeedslider.defaultFanSpeed());
 		}
 	}	
 		OCTOPRINT_VIEWMODELS.push([
