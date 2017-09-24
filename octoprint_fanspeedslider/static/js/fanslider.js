@@ -38,8 +38,8 @@ $(function() {
 			//add new fan controls
 			$("#control > div.jog-panel.general").find("button").eq(0).before("\
 				<input type=\"number\" style=\"width: 90px\" data-bind=\"slider: {min: 00, max: 100, step: 1, value: fanSpeed, tooltip: 'hide'}\">\
-				<button class=\"btn btn-block control-box\" data-bind=\"enable: isOperational() && !isPrinting() && loginState.isUser(), click: function() { sendFanSpeed() }\">" + gettext("Fan on") + ":<span data-bind=\"text: fanSpeed() + '%'\"></span></button>\
-				<button class=\"btn btn-block control-box\" data-bind=\"enable: isOperational() && !isPrinting() && loginState.isUser(), click: function() { $root.sendCustomCommand({ type: 'command', commands: ['M106 S0'] }) }\">" + gettext("Fan off") + "</button>\
+				<button class=\"btn btn-block control-box\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { sendFanSpeed() }\">" + gettext("Fan on") + ":<span data-bind=\"text: fanSpeed() + '%'\"></span></button>\
+				<button class=\"btn btn-block control-box\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { $root.sendCustomCommand({ type: 'command', commands: ['M106 S0'] }) }\">" + gettext("Fan off") + "</button>\
 			");
 		} else { //if TouchUI is active we only add the speed input + fan on button in a new section.
 			console.log("Fan Speed Slider: NOTICE! TouchUI is active, adding simplified control.");
