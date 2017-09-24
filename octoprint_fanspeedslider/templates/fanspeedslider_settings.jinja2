@@ -1,18 +1,38 @@
-<h4>{{ _('Fan Speed Slider') }}</h4>
-<div>
-    <p>{{ _('Set the default value for the fan speed slider.') }}</p>
-</div>
+<h3>{{ _('Fan Speed Control') }}</h3>
 <div>
     <form class="form-horizontal">
+        <p>{{ _('Set the default value for the speed slider.') }}</p>
         <div class="control-group">
             <label class="control-label">{{ _('Default Value') }}</label>
             <div class="controls">
                 <div class="input-append">
-                    <input type="number" min="0" max="100" class="input-mini" data-bind="value: settings.plugins.fanspeedslider.fanSpeed">
+                    <input type="number" min="0" max="100" class="input-mini" data-bind="value: settings.plugins.fanspeedslider.defaultFanSpeed">
                     <span class="add-on">%</span>
                 </div>
-                <span class="help-inline">{{ _('This value does <i><b>not</b></i> affect the maximum or minimum speed of the fan. To limit the power the fan will use during a print, see your slicer\'s min / max fan speed setting.') }}</span>
+                <span class="help-block">{{ _('The default value the slider will be set to when opening OctoPrint\'s UI') }}</span>
             </div>
         </div>
+        <p>{{ _('The settings below can be used to limit the fan\'s output without having to re-slice and re-upload your gcode.') }}</p>
+        <div class="control-group">
+            <label class="control-label">{{ _('Minimum Speed') }}</label>
+            <div class="controls">
+                <div class="input-append">
+                    <input type="number" min="0" max="100" class="input-mini" data-bind="value: settings.plugins.fanspeedslider.minSpeed">
+                    <span class="add-on">%</span>
+                </div>
+                <span class="help-block">{{ _('Any value sent which is below this value will be increased to meet this speed. Useful if your fan doesn\'t work below a certain threshold.') }}</span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">{{ _('Maximum Speed') }}</label>
+            <div class="controls">
+                <div class="input-append">
+                    <input type="number" min="0" max="100" class="input-mini" data-bind="value: settings.plugins.fanspeedslider.maxSpeed">
+                    <span class="add-on">%</span>
+                </div>
+                <span class="help-block">{{ _('Any value sent which is above this value will be decreased to meet this speed. Useful if your fan is too strong on full speed.') }}</span>
+            </div>
+        </div>
+        <p><i>{{ _('NOTE: The min/max setting has no effect when you are printing from an SD card that is attached directly to the printer as the gcode does not pass through OctoPrint.') }}</i></p>
     </form>
 </div>

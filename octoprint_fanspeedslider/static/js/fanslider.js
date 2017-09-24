@@ -7,20 +7,20 @@ $(function() {
 	function FanSliderPluginViewModel(parameters) {
 		var self = this;
 
-		self.printerstate =  parameters[0];
-		self.loginstate = parameters[1];
-		self.control = parameters[2];
-		self.settings = parameters[3];
+		self.settings = parameters[0];
+		self.control = parameters[1];
+		self.loginState = parameters[2];
 
-		//default to 100% fan speed
-		fanSpeed = ko.observable(undefined);		
+		fanSpeed = ko.observable(undefined);
+
 		//convert percentage into PWM
-		fanPWM = ko.pureComputed(function () {
-			return Math.round(fanSpeed() * 255 / 100);
+		self.fanPWM = ko.pureComputed(function () {
+			self.speed = fanSpeed() * 255 / 100 //don't forget to limit this to 2 decimal places at some point.
+			return self.speed;
 		});
 		//send gcode to set fan speed
 		sendFanSpeed = function () {
-			self.control.sendCustomCommand({ command: "M106 S" + fanPWM() });
+			self.control.sendCustomCommand({ command: "M106 S" + self.fanPWM() });
 		};	
 		//extra classes		
 		$("#control > div.jog-panel").eq(0).addClass("controls");
@@ -54,12 +54,11 @@ $(function() {
 		}
 		//retrieve settings
 		self.onBeforeBinding = function() {
-			fanSpeed(self.settings.settings.plugins.fanspeedslider.fanSpeed());
+			fanSpeed(self.settings.settings.plugins.fanspeedslider.defaultFanSpeed());
 		}
 	}	
 		OCTOPRINT_VIEWMODELS.push([
 			FanSliderPluginViewModel,
-
-		["printerStateViewModel", "loginStateViewModel", "controlViewModel", "settingsViewModel"]
+		["settingsViewModel", "controlViewModel", "loginStateViewModel"]
 	]);
 });
