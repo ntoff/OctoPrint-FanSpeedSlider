@@ -5,7 +5,7 @@
 $(function() {
 
 	function FanSliderPluginViewModel(parameters) {
-		//'use strict';
+		'use strict';
 		var self = this;
 
 		self.settings = parameters[0];
@@ -29,8 +29,8 @@ $(function() {
 			}
 		};
 
-		//send gcode to set fan speed TODO: not be a global function
-		sendFanSpeed = ko.pureComputed(function () {
+		//send gcode to set fan speed
+		self.control.sendFanSpeed = ko.pureComputed(function () {
 			self.speed = self.control.fanSpeed() * 255 / 100 //don't forget to limit this to 2 decimal places at some point.
 			if (self.control.fanSpeed() < self.control.minFanSpeed() && self.control.fanSpeed() != "0") {
 				console.log("Fan Speed Control Plugin: " + self.control.fanSpeed() + "% is less than the minimum speed ("+self.control.minFanSpeed()+"%), increasing.");
@@ -65,21 +65,21 @@ $(function() {
 				//add new fan controls
 				$("#control-jog-general").find("button").eq(0).before("\
 					<input type=\"number\" style=\"width: 90px\" data-bind=\"slider: {min: 00, max: 100, step: 1, value: fanSpeed, tooltip: 'hide'}\">\
-					<button class=\"btn btn-block control-box\" id=\"fan-on\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { sendFanSpeed() }\">" + gettext("Fan") + ":<span data-bind=\"text: fanSpeed() + '%'\"></span></button>\
+					<button class=\"btn btn-block control-box\" id=\"fan-on\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { $root.sendFanSpeed() }\">" + gettext("Fan speed") + ":<span data-bind=\"text: fanSpeed() + '%'\"></span></button>\
 					<button class=\"btn btn-block control-box\" id=\"fan-off\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { $root.sendCustomCommand({ type: 'command', commands: ['M106 S0'] }) }\">" + gettext("Fan off") + "</button>\
 				");
 			} else { 
 				//replace touch UI's fan on button with one that sends whatever speed is set in this plugin
 				$("#fan-on").remove();
 				$("#control-jog-general").find("button").eq(0).after("\
-					<button class=\"btn btn-block control-box\" id=\"fan-on\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { sendFanSpeed() }\">" + gettext("Fan on") + "</button>\
+					<button class=\"btn btn-block control-box\" id=\"fan-on\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { $root.sendFanSpeed() }\">" + gettext("Fan on") + "</button>\
 				");
 				//also add spin box + button below in its own section, button is redundant but convenient
 				$("#control-jog-extrusion").after("\
 				<div id=\"control-fan-slider\" class=\"jog-panel filament\" data-bind=\"visible: loginState.isUser\">\
 					<div>\
 						<input type=\"number\" style=\"width: 150px\" data-bind=\"slider: {min: 00, max: 255, step: 1, value: fanSpeed, tooltip: 'hide'}\">\
-						<button class=\"btn btn-block control-box\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { sendFanSpeed() }\">" + gettext("Fan Speed(%)") + "</button>\
+						<button class=\"btn btn-block\" style=\"width: 169px\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { $root.sendFanSpeed() }\">" + gettext("Fan speed:") + "<span data-bind=\"text: fanSpeed() + '%'\"></span></button>\
 					</div>\
 				</div>\
 			");
