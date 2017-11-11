@@ -18,7 +18,7 @@ $(function() {
 		self.control.maxFanSpeed = new ko.observable("100");
 		self.control.notifyDelay = new ko.observable("3000"); //time in milliseconds
 
-        self.showNotify = function(self,options) {
+		self.showNotify = function(self,options) {
 			options.hide = true;
 			options.title = "Fan Speed Control";
 			options.delay =  self.control.notifyDelay();
@@ -26,8 +26,7 @@ $(function() {
 			if (options.delay != "0") {
 				new PNotify(options);
 			}
-            
-        };
+		};
 		
 		//send gcode to set fan speed TODO: not be a global function
 		sendFanSpeed = ko.pureComputed(function () {
@@ -39,7 +38,6 @@ $(function() {
 					text: 'Fan speed increased to meet minimum requirement.',
 				}
 				self.showNotify(self,options);
-				
 			}
 			else {
 				if (self.control.fanSpeed() > self.control.maxFanSpeed()) {
@@ -49,35 +47,32 @@ $(function() {
 						text: 'Fan speed decreased to meet maximum requirement.',
 					}
 					self.showNotify(self,options);
-					
 				}
 			}
 			self.control.sendCustomCommand({ command: "M106 S" + self.speed });
 		});
 		//ph34r
 		try {
-			//extra classes, I hate using this but it makes finding the buttons easier
-			$("#control > div.jog-panel").eq(0).addClass("controls");
-			$("#control > div.jog-panel").eq(1).addClass("tools");
-			$("#control > div.jog-panel").eq(2).addClass("general");	
 			//If not TouchUI then remove standard buttons + add slider + new buttons
 			if ($("#touch body").length ==0 ) { 
-				//add ID to buttons 
-				$("#control > div.general").find("button").eq(0).attr("id", "motors-off");
-				$("#control > div.general").find("button").eq(1).attr("id", "fan-on");
-				$("#control > div.general").find("button").eq(2).attr("id", "fan-off");
+				$("#control-jog-general").find("button").eq(0).attr("id", "motors-off");
+				$("#control-jog-general").find("button").eq(1).attr("id", "fan-on");
+				$("#control-jog-general").find("button").eq(2).attr("id", "fan-off");
 				//remove original fan on/off buttons
 				$("#fan-on").remove();
 				$("#fan-off").remove();
 				//add new fan controls
-				$("#control > div.jog-panel.general").find("button").eq(0).before("\
+				$("#control-jog-general").find("button").eq(0).before("\
 					<input type=\"number\" style=\"width: 90px\" data-bind=\"slider: {min: 00, max: 100, step: 1, value: fanSpeed, tooltip: 'hide'}\">\
-					<button class=\"btn btn-block control-box\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { sendFanSpeed() }\">" + gettext("Fan") + ":<span data-bind=\"text: fanSpeed() + '%'\"></span></button>\
-					<button class=\"btn btn-block control-box\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { $root.sendCustomCommand({ type: 'command', commands: ['M106 S0'] }) }\">" + gettext("Fan off") + "</button>\
+					<button class=\"btn btn-block control-box\" id=\"fan-on\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { sendFanSpeed() }\">" + gettext("Fan") + ":<span data-bind=\"text: fanSpeed() + '%'\"></span></button>\
+					<button class=\"btn btn-block control-box\" id=\"fan-off\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { $root.sendCustomCommand({ type: 'command', commands: ['M106 S0'] }) }\">" + gettext("Fan off") + "</button>\
 				");
-			} else { //if TouchUI is active we only add the speed input + fan on button in a new section.
+			} else { 
+				/* if TouchUI is active we only add the speed input + fan on button in a new section.
+				 * perhaps some day I'll see about messing directly with touchui's fan on button
+				 */
 				console.log("Fan Speed Slider: NOTICE! TouchUI is active, adding simplified control.");
-				$("#control > div.jog-panel.general").after("\
+				$("#control-jog-extrusion").after("\
 				<div id=\"control-fan-slider\" class=\"jog-panel filament\" data-bind=\"visible: loginState.isUser\">\
 					<div>\
 						<input type=\"number\" style=\"width: 150px\" data-bind=\"slider: {min: 00, max: 255, step: 1, value: fanSpeed, tooltip: 'hide'}\">\
@@ -106,10 +101,10 @@ $(function() {
 	}	
 
 	OCTOPRINT_VIEWMODELS.push({
-        construct: FanSliderPluginViewModel,
-        additionalNames: [],
-        dependencies: ["settingsViewModel", "controlViewModel", "loginStateViewModel"],
-        optional: [],
-        elements: []
+		construct: FanSliderPluginViewModel,
+		additionalNames: [],
+		dependencies: ["settingsViewModel", "controlViewModel", "loginStateViewModel"],
+		optional: [],
+		elements: []
 	});
 });
