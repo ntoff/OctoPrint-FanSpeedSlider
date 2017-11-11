@@ -2,7 +2,7 @@
  * Author: ntoff
  * License: AGPLv3
  */
-$(function() {
+$(function () {
 
 	function FanSliderPluginViewModel(parameters) {
 		'use strict';
@@ -19,37 +19,45 @@ $(function() {
 		self.control.maxFanSpeed = new ko.observable(100);
 		self.control.notifyDelay = new ko.observable(3000); //time in milliseconds
 
-		self.showNotify = function(self,options) {
+		self.showNotify = function (self, options) {
 			options.hide = true;
 			options.title = "Fan Speed Control";
-			options.delay =  self.control.notifyDelay();
+			options.delay = self.control.notifyDelay();
 			options.type = "info";
 			if (options.delay != "0") {
 				new PNotify(options);
 			}
 		};
 
-		//send gcode to set fan speed
-		self.control.sendFanSpeed = ko.pureComputed(function () {
+		self.control.fanSpeedToPwm = ko.pureComputed(function () {
 			self.speed = self.control.fanSpeed() * 255 / 100 //don't forget to limit this to 2 decimal places at some point.
+			return self.speed;
+		});
+
+		self.control.checkSliderValue = ko.pureComputed(function () {
 			if (self.control.fanSpeed() < self.control.minFanSpeed() && self.control.fanSpeed() != "0") {
-				console.log("Fan Speed Control Plugin: " + self.control.fanSpeed() + "% is less than the minimum speed ("+self.control.minFanSpeed()+"%), increasing.");
+				console.log("Fan Speed Control Plugin: " + self.control.fanSpeed() + "% is less than the minimum speed (" + self.control.minFanSpeed() + "%), increasing.");
 				self.control.fanSpeed(self.control.minFanSpeed());
 				var options = {
 					text: 'Fan speed increased to meet minimum requirement.',
 				}
-				self.showNotify(self,options);
+				self.showNotify(self, options);
 			}
 			else if (self.control.fanSpeed() > self.control.maxFanSpeed()) {
-					console.log("Fan Speed Control Plugin: " + self.control.fanSpeed() + "% is more than the maximum speed ("+self.control.maxFanSpeed()+"%), decreasing.");
-					self.control.fanSpeed(self.control.maxFanSpeed());
-					var options = {
-						text: 'Fan speed decreased to meet maximum requirement.',
-					}
-					self.showNotify(self,options);
+				console.log("Fan Speed Control Plugin: " + self.control.fanSpeed() + "% is more than the maximum speed (" + self.control.maxFanSpeed() + "%), decreasing.");
+				self.control.fanSpeed(self.control.maxFanSpeed());
+				var options = {
+					text: 'Fan speed decreased to meet maximum requirement.',
+				}
+				self.showNotify(self, options);
 			}
-			self.control.sendCustomCommand({ command: "M106 S" + self.speed });
 		});
+
+		//send gcode to set fan speed
+		self.control.sendFanSpeed = function () {
+			self.control.checkSliderValue();
+			self.control.sendCustomCommand({ command: "M106 S" + self.control.fanSpeedToPwm() });
+		};
 
 		//ph34r
 		try {
@@ -58,7 +66,7 @@ $(function() {
 			$("#control-jog-general").find("button").eq(1).attr("id", "fan-on");
 			$("#control-jog-general").find("button").eq(2).attr("id", "fan-off");
 			//If not TouchUI then remove standard buttons + add slider + new buttons
-			if ($("#touch body").length ==0 ) { 
+			if ($("#touch body").length == 0) {
 				//remove original fan on/off buttons
 				$("#fan-on").remove();
 				$("#fan-off").remove();
@@ -68,7 +76,7 @@ $(function() {
 					<button class=\"btn btn-block control-box\" id=\"fan-on\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { $root.sendFanSpeed() }\">" + gettext("Fan speed") + ":<span data-bind=\"text: fanSpeed() + '%'\"></span></button>\
 					<button class=\"btn btn-block control-box\" id=\"fan-off\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { $root.sendCustomCommand({ type: 'command', commands: ['M106 S0'] }) }\">" + gettext("Fan off") + "</button>\
 				");
-			} else { 
+			} else {
 				//replace touch UI's fan on button with one that sends whatever speed is set in this plugin
 				$("#fan-on").remove();
 				$("#control-jog-general").find("button").eq(0).after("\
@@ -85,22 +93,22 @@ $(function() {
 			");
 			}
 		}
-		catch(error) {
+		catch (error) {
 			console.log(error);
 		}
 
-		self.updateSettings = function() {
+		self.updateSettings = function () {
 			try {
-			self.control.minFanSpeed(parseInt(self.settings.settings.plugins.fanspeedslider.minSpeed()));
-			self.control.maxFanSpeed(parseInt(self.settings.settings.plugins.fanspeedslider.maxSpeed()));
-			self.control.notifyDelay(parseInt(self.settings.settings.plugins.fanspeedslider.notifyDelay()));
+				self.control.minFanSpeed(parseInt(self.settings.settings.plugins.fanspeedslider.minSpeed()));
+				self.control.maxFanSpeed(parseInt(self.settings.settings.plugins.fanspeedslider.maxSpeed()));
+				self.control.notifyDelay(parseInt(self.settings.settings.plugins.fanspeedslider.notifyDelay()));
 			}
-			catch(error) {
+			catch (error) {
 				console.log(error);
 			}
 		}
 
-		self.onBeforeBinding = function() {
+		self.onBeforeBinding = function () {
 			self.control.defaultFanSpeed(parseInt(self.settings.settings.plugins.fanspeedslider.defaultFanSpeed()));
 			self.updateSettings();
 			//if the default fan speed is above or below max/min then set to either max or min
@@ -116,10 +124,10 @@ $(function() {
 		}
 
 		//update settings in case user changes them, otherwise a refresh of the UI is required
-		self.onSettingsHidden = function() {
+		self.onSettingsHidden = function () {
 			self.updateSettings();
 		}
-	}	
+	}
 
 	OCTOPRINT_VIEWMODELS.push({
 		construct: FanSliderPluginViewModel,
