@@ -110,6 +110,9 @@ $(function() {
 			else if (self.control.defaultFanSpeed() > self.control.maxFanSpeed()) {
 				self.control.fanSpeed(self.control.maxFanSpeed());
 			}
+			else {
+				self.control.fanSpeed(self.control.defaultFanSpeed());
+			}
 		}
 
 		//update settings in case user changes them, otherwise a refresh of the UI is required
