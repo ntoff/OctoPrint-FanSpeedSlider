@@ -62,8 +62,12 @@ $(function() {
 			fanSpeed(self.settings.settings.plugins.fanspeedslider.defaultFanSpeed());
 		}
 	}	
-		OCTOPRINT_VIEWMODELS.push([
-			FanSliderPluginViewModel,
-		["settingsViewModel", "controlViewModel", "loginStateViewModel"]
-	]);
+
+	OCTOPRINT_VIEWMODELS.push({
+        construct: FanSliderPluginViewModel,
+        additionalNames: [],
+        dependencies: ["settingsViewModel", "controlViewModel", "loginStateViewModel"],
+        optional: [],
+        elements: []
+    });
 });
