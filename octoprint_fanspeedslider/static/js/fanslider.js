@@ -46,7 +46,7 @@ $(function() {
 					console.log("Fan Speed Control Plugin: " + self.control.fanSpeed() + "% is more than the maximum speed set in the fan control settings, decreasing to " + self.control.maxFanSpeed() + "%");
 					self.control.fanSpeed(self.control.maxFanSpeed());
 					var options = {
-						text: 'Fan speed decreased to meet minimum requirement.',
+						text: 'Fan speed decreased to meet maximum requirement.',
 					}
 					self.showNotify(self,options);
 					
