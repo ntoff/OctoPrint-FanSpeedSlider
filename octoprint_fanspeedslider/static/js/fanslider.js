@@ -33,21 +33,23 @@ $(function() {
 		sendFanSpeed = ko.pureComputed(function () {
 			self.speed = self.control.fanSpeed() * 255 / 100 //don't forget to limit this to 2 decimal places at some point.
 			if (self.control.fanSpeed() < self.control.minFanSpeed() && self.control.fanSpeed() != "0") {
+				console.log("Fan Speed Control Plugin: " + self.control.fanSpeed() + "% is less than the minimum speed set in the fan control settings, increasing to " + self.control.minFanSpeed() + "%");
 				self.control.fanSpeed(self.control.minFanSpeed());
 				var options = {
 					text: 'Fan speed increased to meet minimum requirement.',
 				}
 				self.showNotify(self,options);
-				console.log("Fan Speed Control Plugin: " + self.control.fanSpeed() + "% is less than the minimum speed set in the fan control settings, increasing to " + self.control.minFanSpeed() + "%");
+				
 			}
 			else {
 				if (self.control.fanSpeed() > self.control.maxFanSpeed()) {
+					console.log("Fan Speed Control Plugin: " + self.control.fanSpeed() + "% is more than the maximum speed set in the fan control settings, decreasing to " + self.control.maxFanSpeed() + "%");
 					self.control.fanSpeed(self.control.maxFanSpeed());
 					var options = {
 						text: 'Fan speed decreased to meet minimum requirement.',
 					}
 					self.showNotify(self,options);
-					console.log("Fan Speed Control Plugin: " + self.control.fanSpeed() + "% is more than the maximum speed set in the fan control settings, decreasing to " + self.control.maxFanSpeed() + "%");
+					
 				}
 			}
 			self.control.sendCustomCommand({ command: "M106 S" + self.speed });
