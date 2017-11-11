@@ -17,7 +17,8 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 		return dict(
 			defaultFanSpeed=100,
 			minSpeed=0,
-			maxSpeed=100
+			maxSpeed=100,
+			notifyDelay=3000
 		)
 
 	def on_settings_save(self, data):

@@ -5,29 +5,60 @@
 $(function() {
 
 	function FanSliderPluginViewModel(parameters) {
+		//'use strict';
 		var self = this;
 
 		self.settings = parameters[0];
 		self.control = parameters[1];
 		self.loginState = parameters[2];
 
-		fanSpeed = ko.observable(undefined);
+		//fanSpeed = ko.observable("0");
+		self.control.fanSpeed = new ko.observable("100");
+		self.control.minFanSpeed = new ko.observable("000");
+		self.control.maxFanSpeed = new ko.observable("100");
+		self.control.notifyDelay = new ko.observable("3000"); //time in milliseconds
 
-		//convert percentage into PWM
-		self.fanPWM = ko.pureComputed(function () {
-			self.speed = fanSpeed() * 255 / 100 //don't forget to limit this to 2 decimal places at some point.
-			return self.speed;
+        self.showNotify = function(self,options) {
+			options.hide = true;
+			options.title = "Fan Speed Control";
+			options.delay =  self.control.notifyDelay();
+			options.type = "info";
+			if (options.delay != "0") {
+				new PNotify(options);
+			}
+            
+        };
+		
+		//send gcode to set fan speed TODO: not be a global function
+		sendFanSpeed = ko.pureComputed(function () {
+			self.speed = self.control.fanSpeed() * 255 / 100 //don't forget to limit this to 2 decimal places at some point.
+			if (self.control.fanSpeed() < self.control.minFanSpeed() && self.control.fanSpeed() != "0") {
+				self.control.fanSpeed(self.control.minFanSpeed());
+				var options = {
+					text: 'Fan speed increased to meet minimum requirement.',
+				}
+				self.showNotify(self,options);
+				console.log("Fan Speed Control Plugin: " + self.control.fanSpeed() + "% is less than the minimum speed set in the fan control settings, increasing to " + self.control.minFanSpeed() + "%");
+			}
+			else {
+				if (self.control.fanSpeed() > self.control.maxFanSpeed()) {
+					self.control.fanSpeed(self.control.maxFanSpeed());
+					var options = {
+						text: 'Fan speed decreased to meet minimum requirement.',
+					}
+					self.showNotify(self,options);
+					console.log("Fan Speed Control Plugin: " + self.control.fanSpeed() + "% is more than the maximum speed set in the fan control settings, decreasing to " + self.control.maxFanSpeed() + "%");
+				}
+			}
+			self.control.sendCustomCommand({ command: "M106 S" + self.speed });
 		});
-		//send gcode to set fan speed
-		sendFanSpeed = function () {
-			self.control.sendCustomCommand({ command: "M106 S" + self.fanPWM() });
-		};
+		//ph34r
 		try {
-			//extra classes		
+			//extra classes, I hate using this but it makes finding the buttons easier
 			$("#control > div.jog-panel").eq(0).addClass("controls");
 			$("#control > div.jog-panel").eq(1).addClass("tools");
 			$("#control > div.jog-panel").eq(2).addClass("general");	
-			//If !TouchUI then remove standard buttons + add slider + new buttons
+			//If not TouchUI then remove standard buttons + add slider + new buttons
 			if ($("#touch body").length ==0 ) { 
 				//add ID to buttons 
 				$("#control > div.general").find("button").eq(0).attr("id", "motors-off");
@@ -39,7 +70,7 @@ $(function() {
 				//add new fan controls
 				$("#control > div.jog-panel.general").find("button").eq(0).before("\
 					<input type=\"number\" style=\"width: 90px\" data-bind=\"slider: {min: 00, max: 100, step: 1, value: fanSpeed, tooltip: 'hide'}\">\
-					<button class=\"btn btn-block control-box\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { sendFanSpeed() }\">" + gettext("Fan on") + ":<span data-bind=\"text: fanSpeed() + '%'\"></span></button>\
+					<button class=\"btn btn-block control-box\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { sendFanSpeed() }\">" + gettext("Fan") + ":<span data-bind=\"text: fanSpeed() + '%'\"></span></button>\
 					<button class=\"btn btn-block control-box\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { $root.sendCustomCommand({ type: 'command', commands: ['M106 S0'] }) }\">" + gettext("Fan off") + "</button>\
 				");
 			} else { //if TouchUI is active we only add the speed input + fan on button in a new section.
@@ -59,7 +90,16 @@ $(function() {
 		}
 		//retrieve settings
 		self.onBeforeBinding = function() {
-			fanSpeed(self.settings.settings.plugins.fanspeedslider.defaultFanSpeed());
+			self.control.fanSpeed(self.settings.settings.plugins.fanspeedslider.defaultFanSpeed());
+			self.control.minFanSpeed(self.settings.settings.plugins.fanspeedslider.minSpeed());
+			self.control.maxFanSpeed(self.settings.settings.plugins.fanspeedslider.maxSpeed());
+			self.control.notifyDelay(self.settings.settings.plugins.fanspeedslider.notifyDelay());
+		}
+		//update settings in case user changes them, otherwise a refresh of the UI is required
+		self.onSettingsHidden = function() {
+			self.control.minFanSpeed(self.settings.settings.plugins.fanspeedslider.minSpeed());
+			self.control.maxFanSpeed(self.settings.settings.plugins.fanspeedslider.maxSpeed());
+			self.control.notifyDelay(self.settings.settings.plugins.fanspeedslider.notifyDelay());
 		}
 	}	
 
@@ -69,5 +109,5 @@ $(function() {
         dependencies: ["settingsViewModel", "controlViewModel", "loginStateViewModel"],
         optional: [],
         elements: []
-    });
+	});
 });
