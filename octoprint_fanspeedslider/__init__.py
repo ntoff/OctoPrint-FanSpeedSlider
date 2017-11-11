@@ -50,11 +50,11 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 			if fanPwm and fanPwm.group(1):
 				fanPwm = fanPwm.group(1)
 				if Decimal(fanPwm) < self.minPWM and Decimal(fanPwm) != 0:
-					self._logger.info("fan pwm value " + str(fanPwm) + " is below threshold, increasing to " + str(self.minPWM))
+					self._logger.info("fan pwm value " + str(fanPwm) + " is below threshold, increasing to " + str(self.minPWM) + " (" + str(self.minSpeed) + "%)")
 	 				cmd = "M106 S" + str(self.minPWM)
 					return cmd,
 				elif Decimal(fanPwm) > self.maxPWM:
-					self._logger.info("fan pwm value " + str(fanPwm) + " is above threshold, decreasing to " + str(self.maxPWM))
+					self._logger.info("fan pwm value " + str(fanPwm) + " is above threshold, decreasing to " + str(self.maxPWM) + " (" + str(self.maxSpeed) + "%)")
 					cmd = "M106 S" + str(self.maxPWM)
 					return cmd,
 
