@@ -40,16 +40,22 @@ $(function () {
 				self.control.fanSpeed(self.control.minFanSpeed());
 				var options = {
 					text: 'Fan speed increased to meet minimum requirement.',
+					addclass:  'fan_speed_notice_low',
 				}
-				self.showNotify(self, options);
+				if ($(".fan_speed_notice_low").length <1) {
+					self.showNotify(self, options);
+				}
 			}
 			else if (self.control.fanSpeed() > self.control.maxFanSpeed()) {
 				console.log("Fan Speed Control Plugin: " + self.control.fanSpeed() + "% is more than the maximum speed (" + self.control.maxFanSpeed() + "%), decreasing.");
 				self.control.fanSpeed(self.control.maxFanSpeed());
 				var options = {
 					text: 'Fan speed decreased to meet maximum requirement.',
+					addclass:  'fan_speed_notice_high',
 				}
-				self.showNotify(self, options);
+				if ($(".fan_speed_notice_high").length <1) {
+					self.showNotify(self, options);
+				}
 			}
 		});
 
