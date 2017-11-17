@@ -12,12 +12,11 @@ $(function () {
 		self.control = parameters[1];
 		self.loginState = parameters[2];
 
-		//fanSpeed = ko.observable("0");
-		self.settings.defaultFanSpeed = new ko.observable(100);
-		self.control.fanSpeed = new ko.observable(100);
-		self.settings.minFanSpeed = new ko.observable(0);
-		self.settings.maxFanSpeed = new ko.observable(100);
-		self.settings.notifyDelay = new ko.observable(4000); //time in milliseconds
+		self.settings.defaultFanSpeed = new ko.observable(100);	//this,
+		self.control.fanSpeed = new ko.observable(100);			//this,
+		self.settings.minFanSpeed = new ko.observable(0); 		//this,
+		self.settings.maxFanSpeed = new ko.observable(100);		//and this are percents 0 - 100%
+		self.settings.notifyDelay = new ko.observable(4000); 	//time in milliseconds
 
 		self.showNotify = function (self, options) {
 			options.hide = true;
