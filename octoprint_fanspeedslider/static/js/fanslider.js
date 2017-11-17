@@ -78,7 +78,7 @@ $(function () {
 				$("#fan-off").remove();
 				//add new fan controls
 				$("#control-jog-general").find("button").eq(0).before("\
-					<input type=\"number\" style=\"width: 90px\" data-bind=\"slider: {min: 00, max: 100, step: 1, value: fanSpeed, tooltip: 'hide'}\">\
+					<input type=\"number\" style=\"width: 95px\" data-bind=\"slider: {min: 00, max: 100, step: 1, value: fanSpeed, tooltip: 'hide'}\">\
 					<button class=\"btn btn-block control-box\" id=\"fan-on\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { $root.sendFanSpeed() }\">" + gettext("Fan speed") + ":<span data-bind=\"text: fanSpeed() + '%'\"></span></button>\
 					<button class=\"btn btn-block control-box\" id=\"fan-off\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { $root.sendCustomCommand({ type: 'command', commands: ['M106 S0'] }) }\">" + gettext("Fan off") + "</button>\
 				");
@@ -92,7 +92,7 @@ $(function () {
 				$("#control-jog-extrusion").after("\
 				<div id=\"control-fan-slider\" class=\"jog-panel filament\" data-bind=\"visible: loginState.isUser\">\
 					<div>\
-						<input type=\"number\" style=\"width: 150px\" data-bind=\"slider: {min: 00, max: 255, step: 1, value: fanSpeed, tooltip: 'hide'}\">\
+						<input type=\"number\" style=\"width: 150px\" data-bind=\"slider: {min: 00, max: 100, step: 1, value: fanSpeed, tooltip: 'hide'}\">\
 						<button class=\"btn btn-block\" style=\"width: 169px\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { $root.sendFanSpeed() }\">" + gettext("Fan speed:") + "<span data-bind=\"text: fanSpeed() + '%'\"></span></button>\
 					</div>\
 				</div>\
@@ -126,7 +126,7 @@ $(function () {
 			}
 			else {
 				self.control.fanSpeed(self.control.defaultFanSpeed());
-			}
+			}			
 		}
 
 		//update settings in case user changes them, otherwise a refresh of the UI is required
