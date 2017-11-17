@@ -32,6 +32,34 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 		if "notifyDelay" in data.keys():
 			s.setInt(["notifyDelay"], data["notifyDelay"])
 		self.get_settings_updates()
+		#clean up settings if everything's default
+		self.on_settings_cleanup()
+		s.save()
+
+	#function stolen...err borrowed :D from types.py @ 1663
+	def on_settings_cleanup(self):
+		import octoprint.util
+		from octoprint.settings import NoSuchSettingsPath
+
+		try:
+			config = self._settings.get_all_data(merged=False, incl_defaults=False, error_on_path=True)
+		except NoSuchSettingsPath:
+			return
+
+		if config is None:
+			self._settings.clean_all_data()
+			return
+
+		if self.config_version_key in config and config[self.config_version_key] is None:
+			del config[self.config_version_key]
+
+		defaults = self.get_settings_defaults()
+		diff = octoprint.util.dict_minimal_mergediff(defaults, config)
+
+		if not diff:
+			self._settings.clean_all_data()
+		else:
+			self._settings.set([], diff)
 
 	def get_assets(self):
 		return dict(
