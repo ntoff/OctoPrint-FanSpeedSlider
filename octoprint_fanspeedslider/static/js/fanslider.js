@@ -5,7 +5,7 @@
 $(function () {
 
 	function FanSliderPluginViewModel(parameters) {
-		'use strict';
+		//'use strict';
 		var self = this;
 
 		self.settings = parameters[0];
