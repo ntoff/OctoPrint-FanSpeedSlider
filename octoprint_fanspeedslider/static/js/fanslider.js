@@ -13,16 +13,16 @@ $(function () {
 		self.loginState = parameters[2];
 
 		//fanSpeed = ko.observable("0");
-		self.control.defaultFanSpeed = new ko.observable(100);
+		self.settings.defaultFanSpeed = new ko.observable(100);
 		self.control.fanSpeed = new ko.observable(100);
-		self.control.minFanSpeed = new ko.observable(0);
-		self.control.maxFanSpeed = new ko.observable(100);
-		self.control.notifyDelay = new ko.observable(3000); //time in milliseconds
+		self.settings.minFanSpeed = new ko.observable(0);
+		self.settings.maxFanSpeed = new ko.observable(100);
+		self.settings.notifyDelay = new ko.observable(4000); //time in milliseconds
 
 		self.showNotify = function (self, options) {
 			options.hide = true;
 			options.title = "Fan Speed Control";
-			options.delay = self.control.notifyDelay();
+			options.delay = self.settings.notifyDelay();
 			options.type = "info";
 			if (options.delay != "0") {
 				new PNotify(options);
@@ -35,22 +35,22 @@ $(function () {
 		});
 
 		self.control.checkSliderValue = ko.pureComputed(function () {
-			if (self.control.fanSpeed() < self.control.minFanSpeed() && self.control.fanSpeed() != "0") {
-				console.log("Fan Speed Control Plugin: " + self.control.fanSpeed() + "% is less than the minimum speed (" + self.control.minFanSpeed() + "%), increasing.");
-				self.control.fanSpeed(self.control.minFanSpeed());
+			if (self.control.fanSpeed() < self.settings.minFanSpeed() && self.control.fanSpeed() != "0") {
+				console.log("Fan Speed Control Plugin: " + self.control.fanSpeed() + "% is less than the minimum speed (" + self.settings.minFanSpeed() + "%), increasing.");
+				self.control.fanSpeed(self.settings.minFanSpeed());
 				var options = {
-					text: 'Fan speed increased to meet minimum requirement.',
+					text: gettext('Fan speed increased to meet minimum speed requirement.'),
 					addclass:  'fan_speed_notice_low',
 				}
 				if ($(".fan_speed_notice_low").length <1) {
 					self.showNotify(self, options);
 				}
 			}
-			else if (self.control.fanSpeed() > self.control.maxFanSpeed()) {
-				console.log("Fan Speed Control Plugin: " + self.control.fanSpeed() + "% is more than the maximum speed (" + self.control.maxFanSpeed() + "%), decreasing.");
-				self.control.fanSpeed(self.control.maxFanSpeed());
+			else if (self.control.fanSpeed() > self.settings.maxFanSpeed()) {
+				console.log("Fan Speed Control Plugin: " + self.control.fanSpeed() + "% is more than the maximum speed (" + self.settings.maxFanSpeed() + "%), decreasing.");
+				self.control.fanSpeed(self.settings.maxFanSpeed());
 				var options = {
-					text: 'Fan speed decreased to meet maximum requirement.',
+					text: gettext('Fan speed decreased to meet maximum speed requirement.'),
 					addclass:  'fan_speed_notice_high',
 				}
 				if ($(".fan_speed_notice_high").length <1) {
@@ -105,9 +105,9 @@ $(function () {
 
 		self.updateSettings = function () {
 			try {
-				self.control.minFanSpeed(parseInt(self.settings.settings.plugins.fanspeedslider.minSpeed()));
-				self.control.maxFanSpeed(parseInt(self.settings.settings.plugins.fanspeedslider.maxSpeed()));
-				self.control.notifyDelay(parseInt(self.settings.settings.plugins.fanspeedslider.notifyDelay()));
+				self.settings.minFanSpeed(parseInt(self.settings.settings.plugins.fanspeedslider.minSpeed()));
+				self.settings.maxFanSpeed(parseInt(self.settings.settings.plugins.fanspeedslider.maxSpeed()));
+				self.settings.notifyDelay(parseInt(self.settings.settings.plugins.fanspeedslider.notifyDelay()));
 			}
 			catch (error) {
 				console.log(error);
@@ -115,17 +115,17 @@ $(function () {
 		}
 
 		self.onBeforeBinding = function () {
-			self.control.defaultFanSpeed(parseInt(self.settings.settings.plugins.fanspeedslider.defaultFanSpeed()));
+			self.settings.defaultFanSpeed(parseInt(self.settings.settings.plugins.fanspeedslider.defaultFanSpeed()));
 			self.updateSettings();
 			//if the default fan speed is above or below max/min then set to either max or min
-			if (self.control.defaultFanSpeed() < self.control.minFanSpeed()) {
-				self.control.fanSpeed(self.control.minFanSpeed());
+			if (self.settings.defaultFanSpeed() < self.settings.minFanSpeed()) {
+				self.control.fanSpeed(self.settings.minFanSpeed());
 			}
-			else if (self.control.defaultFanSpeed() > self.control.maxFanSpeed()) {
-				self.control.fanSpeed(self.control.maxFanSpeed());
+			else if (self.settings.defaultFanSpeed() > self.settings.maxFanSpeed()) {
+				self.control.fanSpeed(self.settings.maxFanSpeed());
 			}
 			else {
-				self.control.fanSpeed(self.control.defaultFanSpeed());
+				self.control.fanSpeed(self.settings.defaultFanSpeed());
 			}			
 		}
 
