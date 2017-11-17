@@ -22,7 +22,15 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 		)
 
 	def on_settings_save(self, data):
-		octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
+		s = self._settings
+		if "defaultFanSpeed" in data.keys():
+			s.setInt(["defaultFanSpeed"], data["defaultFanSpeed"])
+		if "minSpeed" in data.keys():
+			s.setInt(["minSpeed"], data["minSpeed"])
+		if "maxSpeed" in data.keys():
+			s.setInt(["maxSpeed"], data["maxSpeed"])
+		if "notifyDelay" in data.keys():
+			s.setInt(["notifyDelay"], data["notifyDelay"])
 		self.get_settings_updates()
 
 	def get_assets(self):
@@ -37,9 +45,9 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 		]
 
 	def get_settings_updates(self):
-		self.defaultFanSpeed = self._settings.get(["defaultFanSpeed"])
-		self.minSpeed = self._settings.get(["minSpeed"])
-		self.maxSpeed = self._settings.get(["maxSpeed"])
+		self.defaultFanSpeed = self._settings.getInt(["defaultFanSpeed"])
+		self.minSpeed = self._settings.getInt(["minSpeed"])
+		self.maxSpeed = self._settings.getInt(["maxSpeed"])
 		
 		getcontext().prec=5 #sets precision for "Decimal" not sure if this'll cause conflicts, ideas?
 		self.minPWM = round( Decimal(self.minSpeed) * Decimal(2.55), 2 )
