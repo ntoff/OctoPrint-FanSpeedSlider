@@ -17,12 +17,49 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 		return dict(
 			defaultFanSpeed=100,
 			minSpeed=0,
-			maxSpeed=100
+			maxSpeed=100,
+			notifyDelay=4000
 		)
 
 	def on_settings_save(self, data):
-		octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
+		s = self._settings
+		if "defaultFanSpeed" in data.keys():
+			s.setInt(["defaultFanSpeed"], data["defaultFanSpeed"])
+		if "minSpeed" in data.keys():
+			s.setInt(["minSpeed"], data["minSpeed"])
+		if "maxSpeed" in data.keys():
+			s.setInt(["maxSpeed"], data["maxSpeed"])
+		if "notifyDelay" in data.keys():
+			s.setInt(["notifyDelay"], data["notifyDelay"])
 		self.get_settings_updates()
+		#clean up settings if everything's default
+		self.on_settings_cleanup()
+		s.save()
+
+	#function stolen...err borrowed :D from types.py @ 1663
+	def on_settings_cleanup(self):
+		import octoprint.util
+		from octoprint.settings import NoSuchSettingsPath
+
+		try:
+			config = self._settings.get_all_data(merged=False, incl_defaults=False, error_on_path=True)
+		except NoSuchSettingsPath:
+			return
+
+		if config is None:
+			self._settings.clean_all_data()
+			return
+
+		if self.config_version_key in config and config[self.config_version_key] is None:
+			del config[self.config_version_key]
+
+		defaults = self.get_settings_defaults()
+		diff = octoprint.util.dict_minimal_mergediff(defaults, config)
+
+		if not diff:
+			self._settings.clean_all_data()
+		else:
+			self._settings.set([], diff)
 
 	def get_assets(self):
 		return dict(
@@ -36,9 +73,9 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 		]
 
 	def get_settings_updates(self):
-		self.defaultFanSpeed = self._settings.get(["defaultFanSpeed"])
-		self.minSpeed = self._settings.get(["minSpeed"])
-		self.maxSpeed = self._settings.get(["maxSpeed"])
+		self.defaultFanSpeed = self._settings.getInt(["defaultFanSpeed"])
+		self.minSpeed = self._settings.getInt(["minSpeed"])
+		self.maxSpeed = self._settings.getInt(["maxSpeed"])
 		
 		getcontext().prec=5 #sets precision for "Decimal" not sure if this'll cause conflicts, ideas?
 		self.minPWM = round( Decimal(self.minSpeed) * Decimal(2.55), 2 )
@@ -50,11 +87,11 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 			if fanPwm and fanPwm.group(1):
 				fanPwm = fanPwm.group(1)
 				if Decimal(fanPwm) < self.minPWM and Decimal(fanPwm) != 0:
-					self._logger.info("fan pwm value " + str(fanPwm) + " is below threshold, increasing to " + str(self.minPWM))
+					self._logger.info("fan pwm value " + str(fanPwm) + " is below threshold, increasing to " + str(self.minPWM) + " (" + str(self.minSpeed) + "%)")
 	 				cmd = "M106 S" + str(self.minPWM)
 					return cmd,
 				elif Decimal(fanPwm) > self.maxPWM:
-					self._logger.info("fan pwm value " + str(fanPwm) + " is above threshold, decreasing to " + str(self.maxPWM))
+					self._logger.info("fan pwm value " + str(fanPwm) + " is above threshold, decreasing to " + str(self.maxPWM) + " (" + str(self.maxSpeed) + "%)")
 					cmd = "M106 S" + str(self.maxPWM)
 					return cmd,
 
