@@ -5,18 +5,18 @@
             <label class="control-label">{{ _('Default Value') }}</label>
             <div class="controls">
                 <div class="input-append">
-                    <input type="number" min="0" max="100" class="input-mini" data-bind="attr: {title: 'This is the value the slider will default to when the UI is loaded / refreshed.' }, value: settings.plugins.fanspeedslider.defaultFanSpeed">
+                    <input type="number" min="0" max="100" class="input-mini" data-bind="attr: { title: defaultTitle }, value: settings.plugins.fanspeedslider.defaultFanSpeed">
                     <span class="add-on">%</span>
                 </div>
                 <span class="help-block">{{ _('The default value the slider will be set to when opening OctoPrint\'s UI') }}</span>
             </div>
         </div>
-        <p>{{ _('The settings below can be used to limit the fan\'s output without having to re-slice and re-upload your gcode.') }}</p>
+        <!--<strong>{{ _('The settings below can be used to limit the fan\'s output without having to re-slice and re-upload your gcode.') }}</strong>-->
         <div class="control-group">
             <label class="control-label">{{ _('Minimum Speed') }}</label>
             <div class="controls">
                 <div class="input-append">
-                    <input type="number" min="0" max="100" class="input-mini" data-bind="value: settings.plugins.fanspeedslider.minSpeed">
+                    <input type="number" min="0" max="100" class="input-mini" data-bind="attr: { title: minTitle }, value: settings.plugins.fanspeedslider.minSpeed">
                     <span class="add-on">%</span>
                 </div>
                 <span class="help-block">{{ _('Any value sent which is below this value will be increased to meet this speed. Useful if your fan doesn\'t work below a certain threshold.') }}</span>
@@ -26,7 +26,7 @@
             <label class="control-label">{{ _('Maximum Speed') }}</label>
             <div class="controls">
                 <div class="input-append">
-                    <input type="number" min="0" max="100" class="input-mini" data-bind="value: settings.plugins.fanspeedslider.maxSpeed">
+                    <input type="number" min="0" max="100" class="input-mini" data-bind="attr: { title: maxTitle }, value: settings.plugins.fanspeedslider.maxSpeed">
                     <span class="add-on">%</span>
                 </div>
                 <span class="help-block">{{ _('Any value sent which is above this value will be decreased to meet this speed. Useful if your fan is too strong on full speed.') }}</span>
@@ -38,7 +38,7 @@
             <label class="control-label">{{ _('Notification Autohide Delay') }}</label>
             <div class="controls">
                 <div class="input-append">
-                    <input type="number" min="0" class="input-mini" data-bind="attr: {title: 'The plugin will notify a user when the fan speed is automatically adjusted, this only applies to speeds set via the button in the UI. \n\nFan speeds sent via the terminal (and therefore any print job) won\'t trigger notification spam.' }, value: settings.plugins.fanspeedslider.notifyDelay">
+                    <input type="number" min="0" class="input-mini" data-bind="attr: {title: noticeTitle }, value: settings.plugins.fanspeedslider.notifyDelay">
                     <span class="add-on">ms</span>
                 </div>
                 <span class="help-block">{{ _('Delay (in milliseconds) before notifications are auto-hidden. Set to 0 to disable notifications.') }}</span>
