@@ -83,7 +83,7 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 
 	def rewrite_m106(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
 		if gcode and gcode.startswith('M106'):
-			fanPwm = re.search("S(\d+.\d+)", cmd)
+			fanPwm = re.search("S(\d+\.?\d*)", cmd)
 			if fanPwm and fanPwm.group(1):
 				fanPwm = fanPwm.group(1)
 				if Decimal(fanPwm) < self.minPWM and Decimal(fanPwm) != 0:
