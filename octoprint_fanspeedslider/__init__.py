@@ -9,6 +9,10 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 					octoprint.plugin.TemplatePlugin,
 					octoprint.plugin.SettingsPlugin,
 					octoprint.plugin.AssetPlugin):
+					
+	def __init__(self):
+		self.minPWM=0,
+		self.maxPWM=255
 
 	def on_after_startup(self):
 		self.get_settings_updates()
