@@ -33,6 +33,16 @@
             </div>
         </div>
         <p><i>{{ _('NOTE: The min/max setting has no effect when you are printing from an SD card that is attached directly to the printer as the gcode does not pass through OctoPrint.') }}</i></p>
+        <div class="control-group">
+            <label class="control-label">{{ _('Disable M106 / M107') }}</label>
+            <div class="controls">
+                <div class="input-append">
+                    <input type="checkbox" class="input-mini" data-bind="attr: { title: maxTitle }, checked: settings.plugins.fanspeedslider.lockfan">
+                </div>
+                <span class="help-block">{{ _('Disables cooling fan commands from reaching the printer. Use with caution. (This performs the same function as the padlock button in the fan section of the controls page)') }}</span>
+            </div>
+        </div>
+        
         <h3>{{ _('Notification Auto Hide Delay') }}</h3>
         <div class="control-group">
             <label class="control-label">{{ _('Notification Autohide Delay') }}</label>

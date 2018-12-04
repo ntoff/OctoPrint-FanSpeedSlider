@@ -22,7 +22,8 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 			defaultFanSpeed=100,
 			minSpeed=0,
 			maxSpeed=100,
-			notifyDelay=4000
+			notifyDelay=4000,
+			lockfan=False
 		)
 
 	def on_settings_save(self, data):
@@ -35,6 +36,8 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 			s.setInt(["maxSpeed"], data["maxSpeed"])
 		if "notifyDelay" in data.keys():
 			s.setInt(["notifyDelay"], data["notifyDelay"])
+		if "lockfan" in data.keys():
+			s.set(["lockfan"], data["lockfan"])
 		self.get_settings_updates()
 		#clean up settings if everything's default
 		self.on_settings_cleanup()
@@ -80,24 +83,28 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 		self.defaultFanSpeed = self._settings.getInt(["defaultFanSpeed"])
 		self.minSpeed = self._settings.getInt(["minSpeed"])
 		self.maxSpeed = self._settings.getInt(["maxSpeed"])
-		
+		self.lockfan = self._settings.get(["lockfan"])
+
 		getcontext().prec=5 #sets precision for "Decimal" not sure if this'll cause conflicts, ideas?
 		self.minPWM = round( Decimal(self.minSpeed) * Decimal(2.55), 2 )
 		self.maxPWM = round( Decimal(self.maxSpeed) * Decimal(2.55), 2 )
 
 	def rewrite_m106(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
-		if gcode and gcode.startswith('M106'):
+		if gcode and gcode.startswith('M106') and not self.lockfan:
 			fanPwm = re.search("S(\d+\.?\d*)", cmd)
 			if fanPwm and fanPwm.group(1):
 				fanPwm = fanPwm.group(1)
 				if Decimal(fanPwm) < self.minPWM and Decimal(fanPwm) != 0:
 					self._logger.info("fan pwm value " + str(fanPwm) + " is below threshold, increasing to " + str(self.minPWM) + " (" + str(self.minSpeed) + "%)")
-	 				cmd = "M106 S" + str(self.minPWM)
+					cmd = "M106 S" + str(self.minPWM)
 					return cmd,
 				elif Decimal(fanPwm) > self.maxPWM:
 					self._logger.info("fan pwm value " + str(fanPwm) + " is above threshold, decreasing to " + str(self.maxPWM) + " (" + str(self.maxSpeed) + "%)")
 					cmd = "M106 S" + str(self.maxPWM)
 					return cmd,
+		elif self.lockfan and gcode and gcode.startswith(('M106', 'M107')):
+			self._logger.info("A cooling fan control command was seen, but fanspeedslider is locked. Control command " + str(cmd) + " removed from queue.")
+			return None,
 
 	def get_update_information(self):
 		return dict(
