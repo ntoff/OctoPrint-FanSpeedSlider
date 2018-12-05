@@ -19,6 +19,8 @@ $(function () {
 		self.settings.notifyDelay = new ko.observable(4000); 	//time in milliseconds
 		self.settings.lockfan = new ko.observable(false);		//ignore fan inputs from gcode and lock the fan buttons
 
+		self.control.lockTitle = new ko.observable(gettext("Unlocked")); //will set the hover title info for the fan lock button
+
 		//Not sure why I put these here, I swear I had a plan when I did it, something about dynamic text? I dunno, should move it back to the settings page
 		self.settings.commonTitle = ko.observable(gettext("\n\nThis allows limiting the cooling fan without having to re-slice your model.\n\nLimited to prints controlled by OctoPrint."));
 		self.settings.defaultTitle = ko.observable(gettext("This is the value the slider will default to when the UI is loaded / refreshed."));
@@ -111,7 +113,9 @@ $(function () {
 					<button class=\"btn btn-block control-box\" id=\"fan-on\" data-bind=\"enable: isOperational() && loginState.isUser() && !islocked(), click: function() { $root.sendFanSpeed() }\">" + gettext("Fan speed") + ":<span data-bind=\"text: fanSpeed() + '%'\"></span></button>\
 					<div class=\"btn-group\">\
 						<button class=\"btn \" id=\"fan-off\" data-bind=\"enable: isOperational() && loginState.isUser() && !islocked(), click: function() { $root.sendCustomCommand({ type: 'command', commands: ['M106 S0'] }) }\">" + gettext("Fan off") + "</button>\
-						<button class=\"btn \" id=\"fan-off\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { $root.lockFanInput() }\" title=\"" + gettext("Lock or unlock the fan controls. When locked, OctoPrint will NOT send ANY M106 / M107 commands to the printer, including those found in the gcode. Use with caution.") + "\"><i class=\"fa fa-unlock\" data-bind=\"css: {'fa-lock': islocked(), 'fa-unlock': !islocked()}\"></i></button>\
+						<button class=\"btn \" id=\"fan-lock\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { $root.lockFanInput() }, attr: { title: lockTitle } \">\
+							<i class=\"fa fa-unlock\" data-bind=\"css: {'fa-lock': islocked(), 'fa-unlock': !islocked()}\"></i>\
+						</button>\
 					</div>\
 				");
 			} else {
@@ -124,7 +128,9 @@ $(function () {
 				$("#control-jog-feedrate").append("\
 					<input type=\"number\" style=\"width: 150px\" data-bind=\"slider: {min: 00, max: 100, step: 1, value: fanSpeed, tooltip: 'hide'}\">\
 					<button class=\"btn btn-block\" style=\"width: 169px\" data-bind=\"enable: isOperational() && loginState.isUser() && !islocked(), click: function() { $root.sendFanSpeed() }\">" + gettext("Fan speed:") + "<span data-bind=\"text: fanSpeed() + '%'\"></span></button>\
-					<button class=\"btn \" id=\"fan-off\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { $root.lockFanInput() }\" title=\"" + gettext("Lock or unlock the fan controls. When locked, OctoPrint will NOT send ANY M106 / M107 commands to the printer, including those found in the gcode. Use with caution.") + "\">" + gettext('Fan Controls  ') + "<i class=\"fa fa-unlock\" data-bind=\"css: {'fa-lock': islocked(), 'fa-unlock': !islocked()}\"></i></button>\
+					<button class=\"btn \" id=\"fan-lock\" data-bind=\"enable: isOperational() && loginState.isUser(), click: function() { $root.lockFanInput() }, attr: { title: lockTitle } \">\
+						Fan Control Lock: <i class=\"fa fa-unlock\" data-bind=\"css: {'fa-lock': islocked(), 'fa-unlock': !islocked()}\"></i>\
+					</button>\
 					");
 			}
 		}
@@ -138,6 +144,13 @@ $(function () {
 				self.settings.maxFanSpeed(parseInt(self.settings.settings.plugins.fanspeedslider.maxSpeed()));
 				self.settings.notifyDelay(parseInt(self.settings.settings.plugins.fanspeedslider.notifyDelay()));
 				self.settings.lockfan(self.settings.settings.plugins.fanspeedslider.lockfan());
+
+				if (self.settings.lockfan()) {
+					self.control.lockTitle( gettext("Lock or unlock the cooling fan controls. When locked, no cooling fan commands will be sent to the printer. \n\n Fan controls are locked."));
+				}
+				else if (!self.settings.lockfan()) {
+					self.control.lockTitle( gettext("Lock or unlock the cooling fan controls. When locked, no cooling fan commands will be sent to the printer. \n\n Fan controls are unlocked"))
+				}
 			}
 			catch (error) {
 				console.log(error);
