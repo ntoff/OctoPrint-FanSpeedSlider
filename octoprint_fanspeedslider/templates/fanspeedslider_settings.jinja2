@@ -11,6 +11,15 @@
                 <span class="help-block">{{ _('The default value the slider will be set to when opening OctoPrint\'s UI') }}</span>
             </div>
         </div>
+        <div class="control-group">
+            <label class="control-label">{{ _('Remember Last Speed') }}</label>
+            <div class="controls">
+                <div class="input-append">
+                    <input type="checkbox" class="input-mini" data-bind="attr: { title: lastspeedTitle }, checked: settings.plugins.fanspeedslider.defaultLastSpeed">
+                </div>
+                <span class="help-block">{{ _('Instead of the default speed value, the slider will use the last sent speed as the default value') }}</span>
+            </div>
+        </div>
         <!--<strong>{{ _('The settings below can be used to limit the fan\'s output without having to re-slice and re-upload your gcode.') }}</strong>-->
         <div class="control-group">
             <label class="control-label">{{ _('Minimum Speed') }}</label>
