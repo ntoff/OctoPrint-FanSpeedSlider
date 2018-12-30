@@ -12,7 +12,8 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 					
 	def __init__(self):
 		self.minPWM=0,
-		self.maxPWM=255
+		self.maxPWM=255,
+		self.lockfan=False
 
 	def on_after_startup(self):
 		self.get_settings_updates()
@@ -108,7 +109,7 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 					self._logger.info("fan pwm value " + str(fanPwm) + " is above threshold, decreasing to " + str(self.maxPWM) + " (" + str(self.maxSpeed) + "%)")
 					cmd = "M106 S" + str(self.maxPWM)
 					return cmd,
-		elif self.lockfan and gcode and gcode.startswith(('M106', 'M107')):
+		elif gcode and gcode.startswith(('M106', 'M107')) and self.lockfan:
 			self._logger.info("A cooling fan control command was seen, but fanspeedslider is locked. Control command " + str(cmd) + " removed from queue.")
 			return None,
 
