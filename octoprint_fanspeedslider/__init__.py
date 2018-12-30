@@ -23,7 +23,7 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 			minSpeed=0,
 			maxSpeed=100,
 			notifyDelay=4000,
-			lockfan=False
+			lockfan=False,
 			lastSentSpeed=0,
 			defaultLastSpeed=False
 		)
