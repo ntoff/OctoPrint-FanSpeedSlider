@@ -12,6 +12,8 @@ Slide the slider, click the button. There really isn't much else to do :)
 
 * The default value of the slider is user configurable, this is the value that the slider will be set to upon loading OctoPrint's UI, and any time you refresh the page. 
 
+* The remember last speed checkbox will tell the plugin to save the fan speed as it gets sent to the printer, and set the slider to that value on load / refresh (overrides the default value setting).
+
 * The minimum fan speed setting will limit how slow the fan runs, this is useful since some fans don't work below a certain speed.
 
 * The maximum fan speed setting will limit how fast the fan runs, this is useful if your fan is too strong, or you wish to limit the speed post-slice without having to re-slice your file.

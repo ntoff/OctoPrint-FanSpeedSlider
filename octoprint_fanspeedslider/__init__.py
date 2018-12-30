@@ -24,6 +24,8 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 			maxSpeed=100,
 			notifyDelay=4000,
 			lockfan=False
+			lastSentSpeed=0,
+			defaultLastSpeed=False
 		)
 
 	def on_settings_save(self, data):
@@ -38,6 +40,10 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 			s.setInt(["notifyDelay"], data["notifyDelay"])
 		if "lockfan" in data.keys():
 			s.set(["lockfan"], data["lockfan"])
+		if "lastSentSpeed" in data.keys():
+			s.setInt(["lastSentSpeed"], data["lastSentSpeed"])
+		if "defaultLastSpeed" in data.keys():
+			s.set(["defaultLastSpeed"], data["defaultLastSpeed"])
 		self.get_settings_updates()
 		#clean up settings if everything's default
 		self.on_settings_cleanup()

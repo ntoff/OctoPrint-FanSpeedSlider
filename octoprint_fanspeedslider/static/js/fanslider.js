@@ -18,6 +18,8 @@ $(function () {
 		self.settings.maxFanSpeed = new ko.observable(100);		//and this are percents 0 - 100%
 		self.settings.notifyDelay = new ko.observable(4000); 	//time in milliseconds
 		self.settings.lockfan = new ko.observable(false);		//ignore fan inputs from gcode and lock the fan buttons
+		self.settings.defaultLastSpeed = new ko.observable(false); //options page option to set the slider to the last sent fan speed value on load/refresh
+		self.settings.lastSentSpeed = new ko.observable(null);	//the last speed value that was sent to the printer
 
 		self.control.lockTitle = new ko.observable(gettext("Unlocked")); //will set the hover title info for the fan lock button
 
@@ -27,7 +29,8 @@ $(function () {
 		self.settings.minTitle = ko.observable(gettext("Set this to the lowest value at which your fan will spin.") + self.settings.commonTitle());
 		self.settings.maxTitle = ko.observable(gettext("Set this <100% if your cooling fan is too strong on full.") + self.settings.commonTitle());
 		self.settings.noticeTitle = ko.observable(gettext("Notifications only apply when setting the speed via the slider + button in the UI. Set to 0 (zero) to disable notifications."));
-		
+		self.settings.lastspeedTitle = ko.observable(gettext("Instead of defaulting to the speed set by \"Default Value\", the slider will be set to the last sent speed on load / refresh. \n\n Note: It takes into account the min/max value setting and overrides the \"Default Value\" setting."));
+
 		self.showNotify = function (self, options) {
 			options.title = "Fan Speed Control";
 			options.delay = options.delay || self.settings.notifyDelay();
@@ -73,6 +76,12 @@ $(function () {
 		self.control.sendFanSpeed = function () {
 			self.control.checkSliderValue();
 			self.control.sendCustomCommand({ command: "M106 S" + self.control.fanSpeedToPwm() });
+
+			if (self.settings.defaultLastSpeed()) {
+				self.settings.settings.plugins.fanspeedslider.lastSentSpeed(self.control.fanSpeed());
+				self.settings.saveData();
+				self.updateSettings();
+			}
 		};
 
 		self.control.lockFanInput = function () {
@@ -151,6 +160,7 @@ $(function () {
 				else if (!self.settings.lockfan()) {
 					self.control.lockTitle( gettext("Lock or unlock the cooling fan controls. When locked, no cooling fan commands will be sent to the printer. \n\n Fan controls are unlocked"))
 				}
+				self.settings.defaultLastSpeed(self.settings.settings.plugins.fanspeedslider.defaultLastSpeed());
 			}
 			catch (error) {
 				console.log(error);
@@ -159,6 +169,7 @@ $(function () {
 
 		self.onBeforeBinding = function () {
 			self.settings.defaultFanSpeed(parseInt(self.settings.settings.plugins.fanspeedslider.defaultFanSpeed()));
+			self.settings.lastSentSpeed(parseInt(self.settings.settings.plugins.fanspeedslider.lastSentSpeed()));
 			self.updateSettings();
 			//if the default fan speed is above or below max/min then set to either max or min
 			if (self.settings.defaultFanSpeed() < self.settings.minFanSpeed()) {
@@ -166,6 +177,9 @@ $(function () {
 			}
 			else if (self.settings.defaultFanSpeed() > self.settings.maxFanSpeed()) {
 				self.control.fanSpeed(self.settings.maxFanSpeed());
+			}
+			else if (self.settings.defaultLastSpeed()) {
+				self.control.fanSpeed(self.settings.lastSentSpeed());
 			}
 			else {
 				self.control.fanSpeed(self.settings.defaultFanSpeed());
