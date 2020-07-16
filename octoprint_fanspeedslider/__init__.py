@@ -31,19 +31,19 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 
 	def on_settings_save(self, data):
 		s = self._settings
-		if "defaultFanSpeed" in data.keys():
+		if "defaultFanSpeed" in list(data.keys()):
 			s.setInt(["defaultFanSpeed"], data["defaultFanSpeed"])
-		if "minSpeed" in data.keys():
+		if "minSpeed" in list(data.keys()):
 			s.setInt(["minSpeed"], data["minSpeed"])
-		if "maxSpeed" in data.keys():
+		if "maxSpeed" in list(data.keys()):
 			s.setInt(["maxSpeed"], data["maxSpeed"])
-		if "notifyDelay" in data.keys():
+		if "notifyDelay" in list(data.keys()):
 			s.setInt(["notifyDelay"], data["notifyDelay"])
-		if "lockfan" in data.keys():
+		if "lockfan" in list(data.keys()):
 			s.set(["lockfan"], data["lockfan"])
-		if "lastSentSpeed" in data.keys():
+		if "lastSentSpeed" in list(data.keys()):
 			s.setInt(["lastSentSpeed"], data["lastSentSpeed"])
-		if "defaultLastSpeed" in data.keys():
+		if "defaultLastSpeed" in list(data.keys()):
 			s.set(["defaultLastSpeed"], data["defaultLastSpeed"])
 		self.get_settings_updates()
 		#clean up settings if everything's default
@@ -131,6 +131,7 @@ class FanSliderPlugin(octoprint.plugin.StartupPlugin,
 		)
 
 __plugin_name__ = "Fan Speed Control"
+__plugin_pythoncompat__ = ">=2.7,<4"
 
 def __plugin_load__():
 	global __plugin_implementation__
